@@ -3,6 +3,8 @@
 ## This module wraps libc fnmatch() through a tiny C shim.
 ## It supports POSIX glob syntax, not Bash/Git extensions.
 
+import std/strutils
+
 when not defined(posix):
   {.error: "posixglob requires a POSIX-like system with fnmatch().".}
 
@@ -72,3 +74,26 @@ proc globMatch*(pattern, text: string; flags: set[GlobFlag] = {}): bool =
 proc match*(pattern, text: string; flags: set[GlobFlag] = {}): bool =
   ## Alias for globMatch().
   globMatch(pattern, text, flags)
+
+proc parseGlobPatterns*(
+  patterns: string;
+  separator: char = ','
+): seq[string] =
+  ## Splits an application-level pattern list into individual glob patterns.
+  ##
+  ## The separator is not POSIX glob syntax. Empty items are ignored and each
+  ## item is stripped, so "src/*, tests/*, ," becomes @["src/*", "tests/*"].
+  for item in patterns.split(separator):
+    let pattern = item.strip()
+    if pattern.len > 0:
+      result.add(pattern)
+
+proc globMatchAny*(
+  patterns: openArray[string];
+  text: string;
+  flags: set[GlobFlag] = {}
+): bool =
+  ## Returns true when `text` matches at least one pattern.
+  for pattern in patterns:
+    if globMatch(pattern, text, flags):
+      return true

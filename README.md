@@ -90,6 +90,19 @@ if supports(gfCaseFold):
   doAssert globMatch("a", "A", {gfCaseFold})
 ```
 
+Comma-separated pattern lists are application-level syntax, not POSIX glob
+syntax. Use `parseGlobPatterns()` when you want to accept values such as an
+environment variable:
+
+```nim
+import posixglob
+
+let patterns = parseGlobPatterns("dev-*,ops-*,repo-?")
+
+if globMatchAny(patterns, "ops-tool"):
+  echo "match"
+```
+
 ## API
 
 ```nim
@@ -102,6 +115,12 @@ type GlobFlag = enum
 
 proc globMatch(pattern, text: string; flags: set[GlobFlag] = {}): bool
 proc match(pattern, text: string; flags: set[GlobFlag] = {}): bool
+proc parseGlobPatterns(patterns: string; separator: char = ','): seq[string]
+proc globMatchAny(
+  patterns: openArray[string];
+  text: string;
+  flags: set[GlobFlag] = {}
+): bool
 proc supports(flag: GlobFlag): bool
 proc supportedFlags(): set[GlobFlag]
 ```
@@ -165,7 +184,7 @@ The FreeBSD-derived test cases are BSD-2-Clause and are used only as test data.
 Versioning is coordinated through:
 
 - `posixglob.nimble` package `version`
-- Git tags in the form `v0.1.5`
+- Git tags in the form `v0.1.6`
 
 Release checklist:
 

@@ -32,3 +32,17 @@ suite "posixglob API":
 
   test "alias":
     check match("*.nim", "main.nim")
+
+  test "comma-separated pattern lists":
+    check parseGlobPatterns("") == newSeq[string]()
+    check parseGlobPatterns("src/*, tests/*, ,*.nim") == @["src/*", "tests/*", "*.nim"]
+    check parseGlobPatterns("src/*;tests/*", ';') == @["src/*", "tests/*"]
+
+  test "match any parsed pattern":
+    let patterns = parseGlobPatterns("dev-*, ops-*, repo-?")
+    check globMatchAny(patterns, "dev-api")
+    check globMatchAny(patterns, "ops-tool")
+    check globMatchAny(patterns, "repo-a")
+    check not globMatchAny(patterns, "repo-aa")
+    check not globMatchAny(patterns, "prod-api")
+    check not globMatch("dev-*,ops-*", "ops-tool")

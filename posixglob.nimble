@@ -1,5 +1,5 @@
 # Package
-version       = "0.1.5"
+version       = "0.1.6"
 author        = "Andrii Zahriadskyi"
 description   = "Small POSIX glob pattern matcher for Nim, backed by libc fnmatch()."
 license       = "MIT"
