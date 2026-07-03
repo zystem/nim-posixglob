@@ -1,0 +1,12 @@
+build/
+nimcache/
+htmldocs/
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+/tests/test_posixglob
+/tests/test_freebsd_cases
+/tests/all
+/examples/basic

@@ -1,0 +1,10 @@
+posixglob includes test cases derived from FreeBSD libc regression tests:
+
+tools/regression/lib/libc/gen/test-fnmatch.c
+Copyright (c) 2010 Jilles Tjoelker. All rights reserved.
+
+Those derived test cases are BSD-2-Clause licensed and live in:
+
+tests/test_freebsd_cases.nim
+
+The package implementation itself is MIT licensed.
