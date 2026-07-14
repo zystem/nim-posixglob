@@ -129,7 +129,10 @@ proc supportedFlags(): set[GlobFlag]
 
 ## Tests
 
-Run all tests:
+Development commands are defined as tasks in `posixglob.nimble`. List them
+with `nimble tasks`.
+
+Run the full test suite:
 
 ```sh
 nimble test
@@ -141,11 +144,13 @@ Run only the FreeBSD-derived compatibility table:
 nimble testFreebsd
 ```
 
-The large compatibility table in `tests/test_freebsd_cases.nim` is derived from the BSD-2-Clause FreeBSD libc regression test `tools/regression/lib/libc/gen/test-fnmatch.c` by Jilles Tjoelker.
+The large compatibility table in `tests/test_freebsd_cases.nim` is derived
+from the BSD-2-Clause FreeBSD libc regression test
+`tools/regression/lib/libc/gen/test-fnmatch.c` by Jilles Tjoelker.
 
 The normal package license is MIT. The test cases derived from FreeBSD keep their BSD notice in the test file header.
 
-## Local build workflow
+## Development
 
 Build the release smoke binary:
 
@@ -153,25 +158,8 @@ Build the release smoke binary:
 nimble buildRelease
 ```
 
-or:
-
-```sh
-./build.sh
-```
-
-Both commands write generated files under `build/`, including `build/nimcache`, so normal development does not require compiler artifacts in `$HOME`.
-
-The release smoke binary is `build/posixglob-basic`. It compiles the package and runs the example program; this package is a library and does not expose a service daemon.
-
-## Configuration
-
-`posixglob` has no runtime configuration, required environment variables, optional environment variables, long-running mode, or CLI options. Consumers configure matching behavior through the `flags` argument in the Nim API.
-
-The service-oriented release items from the release template, such as `--once`, environment-based app config, HTTP e2e mocks, and downstream storage checks, are not applicable to this library.
-
-## Helm
-
-No Helm chart is shipped. This repository packages a Nim library, not a Kubernetes workload, so values files, secrets, runtime artifacts, and chart publishing would be artificial and are intentionally omitted.
+Generated files, including the Nim cache, are written under `build/`. The
+release smoke binary is `build/posixglob-basic`.
 
 ## License
 
@@ -190,14 +178,17 @@ Release checklist:
 
 ```sh
 nimble test -y
-./build.sh
+nimble buildRelease -y
 ```
 
-On a `v*` tag push, GitHub Actions:
+On a `v*` tag push, Woodpecker CI:
 
 - runs the Nim test suite
 - builds the Linux release smoke binary
 - creates a GitHub Release and attaches `posixglob-basic-linux-amd64`
+
+Release publishing uses the GitHub credentials provided by Woodpecker's forge
+integration.
 
 Published artifacts:
 
