@@ -1,4 +1,7 @@
 when:
+  - event: cron
+    cron: renovate
+  - event: manual
   - event: pull_request
   - event: push
     branch: main
@@ -10,6 +13,12 @@ steps:
     image: nimlang/nim:2.2.4
     commands:
       - nimble test -y
+    when:
+      - event: pull_request
+      - event: push
+        branch: main
+      - event: tag
+        ref: refs/tags/v*
 
   - name: build
     image: nimlang/nim:2.2.4
@@ -18,6 +27,12 @@ steps:
       - cp build/posixglob-basic build/posixglob-basic-linux-amd64
     depends_on:
       - test
+    when:
+      - event: pull_request
+      - event: push
+        branch: main
+      - event: tag
+        ref: refs/tags/v*
 
   - name: release
     image: woodpeckerci/plugin-release:0.3.1
@@ -26,6 +41,8 @@ steps:
         from_secret: github_token
       files:
         - build/posixglob-basic-linux-amd64
+        - LICENSE
+        - NOTICE
       file-exists: overwrite
       generate-release-notes: true
       title: ${CI_COMMIT_TAG}
@@ -34,3 +51,16 @@ steps:
     when:
       - event: tag
         ref: refs/tags/v*
+
+  - name: renovate
+    image: renovate/renovate:latest
+    commands:
+      - renovate "$CI_REPO"
+    environment:
+      RENOVATE_PLATFORM: github
+      RENOVATE_TOKEN:
+        from_secret: renovate_token
+    when:
+      - event: cron
+        cron: renovate
+      - event: manual

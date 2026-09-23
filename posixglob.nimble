@@ -4,6 +4,7 @@ author        = "Andrii Zahriadskyi"
 description   = "Small POSIX glob pattern matcher for Nim, backed by libc fnmatch()."
 license       = "MIT"
 srcDir        = "src"
+installFiles  = @["LICENSE", "NOTICE"]
 
 # Dependencies
 requires "nim >= 1.6.0"
